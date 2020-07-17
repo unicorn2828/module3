@@ -1,0 +1,5 @@
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testImplementation "org.junit:junit5-engine:${junit5Version}"
+    implementation project(':repository')
+}
