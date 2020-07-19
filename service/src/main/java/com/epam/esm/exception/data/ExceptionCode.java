@@ -43,6 +43,8 @@ public class ExceptionCode {
     public static final String ERROR_000100 = "000100";
     public static final String ERROR_000101 = "000101";
     public static final String ERROR_000102 = "000102";
+    public static final String ERROR_000103 = "000103";
+    public static final String ERROR_000104 = "000104";
     public static final String ERROR_000110 = "000110";
 
     public static final String ERROR_000120 = "000120";

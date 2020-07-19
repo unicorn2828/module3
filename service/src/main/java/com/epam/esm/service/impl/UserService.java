@@ -2,7 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.epam.esm.builder.impl.UserQueryBuilder;
+import com.epam.esm.builder.QueryBuilder;
 import com.epam.esm.dto.*;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.exception.ServiceExceptionCode;
@@ -11,6 +11,7 @@ import com.epam.esm.model.Order;
 import com.epam.esm.model.Role;
 import com.epam.esm.model.User;
 import com.epam.esm.repository.IUserRepository;
+import com.epam.esm.service.DataProcessingService;
 import com.epam.esm.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ public class UserService implements IUserService {
     private static final String VALUE_TOKEN_TYPE = "bearer";
     private final ModelMapper mapper;
     private final DataProcessingService service;
-    private final UserQueryBuilder queryBuilder;
+    private final QueryBuilder queryBuilder;
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -166,11 +167,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UsersDto findAll(Map<String, String> allParams) {
-        Map<String, String> params = service.toLowerCase(allParams);
+    public UsersDto findAll(Map<String, String> params) {
+        params = service.toCamelCase(params);
         int pageNumber = service.receivePageNumber(params);
         int pageSize = service.receivePageSize(params);
-        List<User> userList = userRepository.findAll(pageNumber, pageSize, queryBuilder.buildQuery(params));
+        List<User> userList = userRepository.findAll(pageNumber,
+                                                     pageSize,
+                                                     queryBuilder.buildQuery(params, User.class.getSimpleName()));
         UsersDto usersDto = new UsersDto();
         usersDto.setUsers(userList.stream()
                                .map(user -> mapper.map(user, UserDto.class))

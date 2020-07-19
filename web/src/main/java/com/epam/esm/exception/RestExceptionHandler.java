@@ -43,7 +43,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ApiError handleAll(Exception ex) {
         String message = ex.getMessage();
-        String errorCode = String.valueOf(HttpStatus.BAD_REQUEST.value());
+        String errorCode = "no code";
         return  new ApiError(message, errorCode);
     }
 

@@ -1,7 +1,7 @@
 package com.epam.esm.service.impl;
 
 
-import com.epam.esm.builder.impl.TagQueryBuilder;
+import com.epam.esm.builder.QueryBuilder;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.dto.TagsDto;
 import com.epam.esm.exception.ServiceException;
@@ -9,6 +9,7 @@ import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.mapper.DtoMapper;
 import com.epam.esm.model.Tag;
 import com.epam.esm.repository.ITagRepository;
+import com.epam.esm.service.DataProcessingService;
 import com.epam.esm.service.ITagService;
 import com.epam.esm.validation.TagValidator;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,8 @@ import static com.epam.esm.exception.ServiceExceptionCode.*;
 @RequiredArgsConstructor
 public class TagService implements ITagService {
     private final DataProcessingService service;
-    private final TagQueryBuilder queryBuilder;
     private final ITagRepository tagRepository;
+    private final QueryBuilder queryBuilder;
     private final TagValidator validator;
     private final DtoMapper mapper;
 
@@ -40,11 +41,13 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public TagsDto findAll(Map<String, String> allParams) {
-        Map<String, String> params = service.toLowerCase(allParams);
+    public TagsDto findAll(Map<String, String> params) {
+        params = service.toCamelCase(params);
         int pageNumber = service.receivePageNumber(params);
         int pageSize = service.receivePageSize(params);
-        List<Tag> tagList = tagRepository.findAll(pageNumber, pageSize, queryBuilder.buildQuery(params));
+        List<Tag> tagList = tagRepository.findAll(pageNumber,
+                                                  pageSize,
+                                                  queryBuilder.buildQuery(params, Tag.class.getSimpleName()));
         List<TagDto> tagDtoList = tagList.stream()
                                          .map(mapper::toTagDto)
                                          .collect(Collectors.toList());
@@ -74,7 +77,7 @@ public class TagService implements ITagService {
 
     @Override
     public TagDto create(TagDto dto) {
-        if (tagRepository.findByName(dto.getName()).isPresent()) {
+        if (tagRepository.findByName(dto.getTagName()).isPresent()) {
             ServiceExceptionCode errorCode = TAG_WITH_THIS_NAME_ALREADY_EXISTS;
             log.error(errorCode.getExceptionCode() + ":" + errorCode.getExceptionMessage());
             throw new ServiceException(errorCode);

@@ -40,6 +40,8 @@ public class ExceptionMessage {
     public static final String ERROR_000100 = "unknown parameter";
     public static final String ERROR_000101 = "tag with this ID does not exist";
     public static final String ERROR_000102 = "page number or size less than 1";
+    public static final String ERROR_000103 = "number of page must be an integer";
+    public static final String ERROR_000104 = "page size number must be an integer";
     public static final String ERROR_000110 = "tag with the same name already exists";
     public static final String ERROR_000120 = "order with this ID does not exist";
     public static final String ERROR_000140 = "expired or invalid JWT token";

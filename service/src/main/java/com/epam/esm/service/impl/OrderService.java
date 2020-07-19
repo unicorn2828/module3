@@ -1,12 +1,13 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.builder.impl.OrderQueryBuilder;
+import com.epam.esm.builder.QueryBuilder;
 import com.epam.esm.dto.*;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.Order;
 import com.epam.esm.model.User;
 import com.epam.esm.repository.IOrderRepository;
 import com.epam.esm.repository.IUserRepository;
+import com.epam.esm.service.DataProcessingService;
 import com.epam.esm.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,7 +30,7 @@ import static com.epam.esm.exception.ServiceExceptionCode.ORDER_WITH_THIS_ID_DOE
 public class OrderService implements IOrderService {
     private final CertificateService certificateService;
     private final IOrderRepository orderRepository;
-    private final OrderQueryBuilder queryBuilder;
+    private final QueryBuilder queryBuilder;
     private final IUserRepository userRepository;
     private final DataProcessingService service;
     private final ModelMapper mapper;
@@ -64,13 +65,13 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrdersDto findAll(Map<String, String> allParams) {
-        Map<String, String> params = service.toLowerCase(allParams);
+    public OrdersDto findAll(Map<String, String> params) {
+        params = service.toCamelCase(params);
         int pageNumber = service.receivePageNumber(params);
         int pageSize = service.receivePageSize(params);
         List<Order> orders = orderRepository.findAll(pageNumber,
                                                      pageSize,
-                                                     queryBuilder.buildQuery(params));
+                                                     queryBuilder.buildQuery(params, Order.class.getSimpleName()));
         OrdersDto ordersDto = new OrdersDto();
         ordersDto.setOrders(orders.stream().map(o -> mapper.map(o, OrderDto.class)).collect(Collectors.toList()));
         return ordersDto;

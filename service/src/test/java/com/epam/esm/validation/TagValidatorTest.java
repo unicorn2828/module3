@@ -16,7 +16,7 @@ class TagValidatorTest {
     @BeforeEach
     void setUp() {
         test = new TagDto();
-        test.setName(TEST);
+        test.setTagName(TEST);
     }
 
     @AfterEach
@@ -32,7 +32,7 @@ class TagValidatorTest {
 
     @Test
     void isTagNegative() {
-        test.setName(null);
+        test.setTagName(null);
         Assertions.assertThrows(ServiceException.class, () -> {
             TagValidator.isTag(test);
         });

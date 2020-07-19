@@ -31,8 +31,6 @@ public class OrderRepository implements IOrderRepository {
 
     @Override
     public List<Order> findAll(int pageNumber, int pageSize, String sql){
-        System.out.println(pageNumber);
-        System.out.println(pageSize);
         TypedQuery<Order> query = entityManager.createQuery(sql, Order.class);
         query.setFirstResult((pageNumber-1) * pageSize);
         query.setMaxResults(pageSize);

@@ -21,7 +21,7 @@ public class TagValidator {
             log.error(errorCode.getExceptionCode() + ":" + errorCode.getExceptionMessage());
             throw new ServiceException(errorCode);
         } else {
-            isName(tag.getName());
+            isName(tag.getTagName());
             return true;
         }
     }

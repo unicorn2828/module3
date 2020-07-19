@@ -1,6 +1,6 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.builder.impl.CertificateQueryBuilder;
+import com.epam.esm.builder.QueryBuilder;
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.dto.CertificatePriceDto;
 import com.epam.esm.dto.CertificatesDto;
@@ -10,6 +10,7 @@ import com.epam.esm.mapper.DtoMapper;
 import com.epam.esm.model.Certificate;
 import com.epam.esm.repository.ICertificateRepository;
 import com.epam.esm.repository.ITagRepository;
+import com.epam.esm.service.DataProcessingService;
 import com.epam.esm.service.ICertificateService;
 import com.epam.esm.validation.CertificateValidator;
 import com.epam.esm.validation.TagValidator;
@@ -32,11 +33,11 @@ import static com.epam.esm.exception.ServiceExceptionCode.CERTIFICATE_WITH_THIS_
 @RequiredArgsConstructor
 public class CertificateService implements ICertificateService {
     private final ICertificateRepository certificateRepository;
-    private final CertificateQueryBuilder queryBuilder;
     private final CertificateValidator validator;
     private final DataProcessingService service;
     private final ITagRepository tagRepository;
     private final TagValidator tagValidator;
+    private final QueryBuilder queryBuilder;
     private final DtoMapper mapper;
 
     @Override
@@ -48,13 +49,14 @@ public class CertificateService implements ICertificateService {
     }
 
     @Override
-    public CertificatesDto findAll(Map<String, String> allParams) {
-        Map<String, String> params = service.toLowerCase(allParams);
+    public CertificatesDto findAll(Map<String, String> params) {
+        params = service.toCamelCase(params);
         int pageNumber = service.receivePageNumber(params);
         int pageSize = service.receivePageSize(params);
         List<Certificate> certificates = certificateRepository.findAll(pageNumber,
                                                                        pageSize,
-                                                                       queryBuilder.buildQuery(params));
+                                                                       queryBuilder.buildQuery(params,
+                                                                                               Certificate.class.getSimpleName()));
         List<CertificateDto> certificateDtoList = certificates.stream()
                                                               .map(mapper::toCertificateDto)
                                                               .collect(Collectors.toList());
@@ -138,10 +140,10 @@ public class CertificateService implements ICertificateService {
                       .forEach(tagValidator::isTag);
         certificateDto.getTags()
                       .stream()
-                      .filter(c -> !tagRepository.findByName(c.getName()).isPresent())
+                      .filter(c -> !tagRepository.findByName(c.getTagName()).isPresent())
                       .forEach(c -> tagRepository.save(mapper.toTag(c)));
         certificateDto.getTags()
-                      .forEach(tagDto -> tagDto.setId(tagRepository.findByName(tagDto.getName())
+                      .forEach(tagDto -> tagDto.setId(tagRepository.findByName(tagDto.getTagName())
                                                                    .get()
                                                                    .getId()));
     }

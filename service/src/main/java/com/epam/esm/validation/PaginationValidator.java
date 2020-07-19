@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
 
-import static com.epam.esm.exception.ServiceExceptionCode.PAGE_NUMBER_OR_SIZE;
+import static com.epam.esm.exception.ServiceExceptionCode.PAGE_NUMBER_OR_SIZE_LESS_1;
 
 @Slf4j
 @Component
@@ -17,8 +17,8 @@ public class PaginationValidator {
     private ServiceExceptionCode errorCode;
 
     public boolean isPageNumberOrSize(int number) {
-        if (number <= 0) {
-            errorCode = PAGE_NUMBER_OR_SIZE;
+        if (number < 1) {
+            errorCode = PAGE_NUMBER_OR_SIZE_LESS_1;
             log.error(errorCode.getExceptionCode() + ":" + errorCode.getExceptionMessage() + " " + number);
             throw new ServiceException(errorCode);
         }

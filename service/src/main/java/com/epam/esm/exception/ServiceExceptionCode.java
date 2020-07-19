@@ -44,7 +44,9 @@ public enum ServiceExceptionCode {
     CERTIFICATE_DURATION_IS_NULL(ExceptionCode.ERROR_000072, ExceptionMessage.ERROR_000072),
 
     UNKNOWN_PARAMETER(ExceptionCode.ERROR_000100, ExceptionMessage.ERROR_000100),
-    PAGE_NUMBER_OR_SIZE(ExceptionCode.ERROR_000102, ExceptionMessage.ERROR_000102),
+    PAGE_NUMBER_OR_SIZE_LESS_1(ExceptionCode.ERROR_000102, ExceptionMessage.ERROR_000102),
+    PAGE_NUMBER_NOT_INTEGER(ExceptionCode.ERROR_000103, ExceptionMessage.ERROR_000103),
+    NUMBER_PAGE_SIZE_NOT_INTEGER(ExceptionCode.ERROR_000104, ExceptionMessage.ERROR_000104),
     ORDER_WITH_THIS_ID_DOES_NOT_EXIST(ExceptionCode.ERROR_000120, ExceptionMessage.ERROR_000120),
 
     EXPIRED_OR_INVALID_JWT_TOKEN(ExceptionCode.ERROR_000140, ExceptionMessage.ERROR_000140),
