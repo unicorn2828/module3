@@ -9,31 +9,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @ComponentScan("com.epam.esm")
-@EnableTransactionManagement
 public class WebAppConfig {
-
-//    @Bean
-//    public LocalContainerEntityManagerFactoryBean
-//    entityManagerFactoryBean() {
-//        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-//        emf.setPackagesToScan(new String[]{"com.epam.esm"});
-//        emf.setJpaVendorAdapter(
-//                new HibernateJpaVendorAdapter());
-//        return emf;
-//    }
-//
-//    @Bean
-//    public PlatformTransactionManager transactionManager() {
-//        JpaTransactionManager transactionManager
-//                = new JpaTransactionManager();
-//        transactionManager.setEntityManagerFactory(
-//                entityManagerFactoryBean().getObject());
-//        return transactionManager;
-//    }
 
     @Bean
     public Tag tag() {

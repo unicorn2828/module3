@@ -13,24 +13,22 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import static com.epam.esm.exception.ServiceExceptionCode.UNKNOWN_PARAMETER;
+import static com.epam.esm.manager.ManagerData.*;
 
 @Slf4j
 @Component
 public class CamelStringManager {
-    private static final String SCAN_PACKAGE = "com.epam.esm.dto";
-    private static final String PATTERN_COMPILE = ".*";
-    private static final String SORT_BY = "sortBy";
-    private static final String SORT_BY_LOWER = "sortby";
-    private static final String PAGE_NUMBER = "pageNumber";
-    private static final String PAGE_NUMBER_LOWER_CASE = "pagenumber";
-    private static final String PAGE_SIZE = "pageSize";
-    private static final String PAGE_SIZE_LOWER_CASE = "pagesize";
 
     public String toCamelString(String in) {
         final ClassPathScanningCandidateComponentProvider provider =
                 new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter(new RegexPatternTypeFilter(Pattern.compile(PATTERN_COMPILE)));
         final Set<BeanDefinition> classes = provider.findCandidateComponents(SCAN_PACKAGE);
+        if (in.isEmpty() || in.isBlank()) {
+            in = DEFAULT;
+        } else if (in.equals(MINUS)) {
+            in = ID;
+        }
         String camelString = in.toLowerCase().trim();
         for (BeanDefinition bean : classes) {
             Class<?> clazz;
@@ -46,7 +44,7 @@ public class CamelStringManager {
                 String fieldName = field.toString();
                 int lastDotIndex = fieldName.lastIndexOf('.');
                 fieldName = fieldName.substring(lastDotIndex + 1);
-                if (String.valueOf(camelString.charAt(0)).equals("-")) {
+                if (String.valueOf(camelString.charAt(0)).equals(MINUS)) {
                     camelString = camelString.substring(1).trim();
                     if (fieldName.toLowerCase().equals(camelString)) {
                         camelString = fieldName;

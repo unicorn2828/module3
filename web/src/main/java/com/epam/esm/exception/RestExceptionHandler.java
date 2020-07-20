@@ -1,6 +1,7 @@
 package com.epam.esm.exception;
 
 import io.jsonwebtoken.JwtException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
 
     @ExceptionHandler(ServiceException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
@@ -51,7 +54,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ApiError handleAll(JwtException ex) {
         ServiceExceptionCode exception = ServiceExceptionCode.EXPIRED_OR_INVALID_JWT_TOKEN;
-        return new ApiError(exception.getExceptionMessage(), exception.getExceptionCode());
+        return new ApiError(ex.getMessage(), exception.getExceptionCode());
     }
 
     @ExceptionHandler(ValidationException.class)

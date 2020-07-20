@@ -14,14 +14,14 @@ import static com.epam.esm.builder.QueryBuilderData.*;
 public class QueryBuilder {
     public String buildQuery(Map<String, String> params, String tableName) {
         String sortingOrder = ASCENDING;
-        String searchBy = DEFAULT;
+        String searchBy = All;
         String sortBy = ID;
         String searchByParam = null;
         for (String param : params.keySet()) {
             switch (param) {
                 case SORT_BY:
                     sortBy = params.get(param);
-                    if (String.valueOf(sortBy.charAt(0)).equals("-")) {
+                    if (String.valueOf(sortBy.charAt(0)).equals(MINUS)) {
                         sortBy = sortBy.substring(1);
                         sortingOrder = DESCENDING;
                     }
@@ -48,25 +48,47 @@ public class QueryBuilder {
                                     String sortBy,
                                     String sortingOrder) {
         String sql;
-        String select = "SELECT x FROM " + tableName + " x ";
-        String orderBy = "ORDER BY x. " + sortBy + " " + sortingOrder;
+        String select = getSelectString(tableName);
+        String orderBy = getSortString(sortBy, sortingOrder, tableName);
         switch (searchBy) {
-            case DEFAULT:
-                sql = select + orderBy;
+            case All:
+                sql = getAllString(select, orderBy);
                 break;
             case CERTIFICATE_TAG_NAME:
-                List<String> tagNames = Arrays.asList(searchByParam.split(","));
-                StringJoiner joiner = new StringJoiner(",");
-                tagNames.forEach(tagName -> joiner.add("'" + tagName.trim() + "'"));
-                sql = select + "LEFT JOIN FETCH x.tags t " + "WHERE x.id " +
-                      "IN (SELECT cc.id FROM Certificate cc LEFT JOIN cc.tags tt WHERE tt.tagName " +
-                      "IN (" + joiner.toString() + ") GROUP BY cc.id HAVING COUNT (cc.id) >= " + tagNames.size() + ") "
-                      + orderBy;
-
+                sql = getCertificateByTagName(searchByParam, select, orderBy);
                 break;
             default:
-                sql = select + "WHERE x." + searchBy + " " + "LIKE CONCAT('" + searchByParam + "', '%') " + orderBy;
+                sql = getDefaultString(select, searchBy, searchByParam, orderBy);
         }
         return sql;
+    }
+
+    private String getSortString(String sortBy, String sortingOrder, String tableName) {
+        if(!SortStringValidator.isValidSortData(sortBy, tableName)){
+            sortBy = ID;
+        }
+        return "ORDER BY x." + sortBy + " " + sortingOrder;
+    }
+
+    private String getSelectString(String tableName) {
+        return "SELECT x FROM " + tableName + " x ";
+    }
+
+    private String getAllString(String select, String orderBy) {
+        return select + orderBy;
+    }
+
+    private String getDefaultString(String select, String searchBy, String searchByParam, String orderBy) {
+        return select + "WHERE x." + searchBy + " " + "LIKE CONCAT('" + searchByParam + "', '%') " + orderBy;
+    }
+
+    private String getCertificateByTagName(String searchByParam, String select, String orderBy) {
+        List<String> tagNames = Arrays.asList(searchByParam.split(","));
+        StringJoiner joiner = new StringJoiner(",");
+        tagNames.forEach(tagName -> joiner.add("'" + tagName.trim() + "'"));
+        return select + "LEFT JOIN FETCH x.tags t " + "WHERE x.id " +
+               "IN (SELECT cc.id FROM Certificate cc LEFT JOIN cc.tags tt WHERE tt.tagName " +
+               "IN (" + joiner.toString() + ") GROUP BY cc.id HAVING COUNT (cc.id) >= " + tagNames.size() + ") "
+               + orderBy;
     }
 }
