@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "orders")
-public class Order extends BaseModel<Order> {
+public class Order extends BaseModel {
     private BigDecimal orderPrice;
     private String ownerName;
     private LocalDate creationDate;

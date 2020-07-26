@@ -3,15 +3,20 @@ package com.epam.esm.service.impl;
 import com.epam.esm.builder.QueryBuilder;
 import com.epam.esm.dto.*;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.model.Order;
 import com.epam.esm.model.User;
 import com.epam.esm.repository.IOrderRepository;
 import com.epam.esm.repository.IUserRepository;
 import com.epam.esm.service.DataProcessingService;
 import com.epam.esm.service.IOrderService;
+import com.epam.esm.validation.CommonValidator;
+import com.epam.esm.validation.OrderValidator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,25 +28,37 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.ServiceExceptionCode.ORDER_WITH_THIS_ID_DOES_NOT_EXIST;
+import static com.epam.esm.model.Role.ROLE_ADMIN;
+import static com.epam.esm.service.DataProcessingService.PageParamType.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class OrderService implements IOrderService {
     private final CertificateService certificateService;
+    private final DataProcessingService dataService;
     private final IOrderRepository orderRepository;
-    private final QueryBuilder queryBuilder;
     private final IUserRepository userRepository;
-    private final DataProcessingService service;
+    private final OrderValidator orderValidator;
+    private final CommonValidator validator;
+    private final QueryBuilder queryBuilder;
     private final ModelMapper mapper;
 
     @Override
+    @Transactional
     public OrderDto create(Authentication authentication, BookingDto bookingDto) {
+        orderValidator.isOrder(bookingDto);
+        bookingDto.getCertificates().forEach(o -> Long.valueOf(o).longValue());
+        List<Long> certificates = bookingDto.getCertificates()
+                                            .stream()
+                                            .map(o -> Long.valueOf(o).longValue())
+                                            .collect(Collectors.toList());
+        certificates.forEach(validator::isId);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         BigDecimal totalPrice = new BigDecimal(0);
         OrderDto orderDto = new OrderDto();
         List<CertificateDto> certificateList = new ArrayList<>();
-        for (Long id : bookingDto.getCertificates()) {
+        for (Long id : certificates) {
             CertificateDto certificate = certificateService.find(id);
             totalPrice = totalPrice.add(new BigDecimal(String.valueOf(certificate.getPrice())));
             certificateList.add(certificate);
@@ -58,17 +75,27 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderDto find(long id) {
-        Order order = orderRepository.find(id).orElseThrow(() -> new ServiceException(ORDER_WITH_THIS_ID_DOES_NOT_EXIST));
+    public OrderDto find(Long orderId) {
+        validator.isId(orderId);
+        Order order = orderRepository.find(orderId).orElseThrow(() -> new ServiceException(ORDER_WITH_THIS_ID_DOES_NOT_EXIST));
         OrderDto orderDto = mapper.map(order, OrderDto.class);
-        return orderDto;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl user = (UserDetailsImpl) authentication.getPrincipal();
+        if (order.getOwnerName().equals(user.getLogin()) ||
+            authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals(ROLE_ADMIN.getAuthority()))) {
+            return orderDto;
+        } else {
+            ServiceExceptionCode exception = ServiceExceptionCode.ACCESS_FORBIDDEN;
+            log.error(exception.getExceptionCode() + ":" + exception.getExceptionMessage());
+            throw new ServiceException(exception);
+        }
     }
 
     @Override
     public OrdersDto findAll(Map<String, String> params) {
-        params = service.toCamelCase(params);
-        int pageNumber = service.receivePageNumber(params);
-        int pageSize = service.receivePageSize(params);
+        params = dataService.toCamelCase(params);
+        int pageNumber = dataService.receivePageParam(params, PAGE_NUMBER);
+        int pageSize = dataService.receivePageParam(params, PAGE_SIZE);
         List<Order> orders = orderRepository.findAll(pageNumber,
                                                      pageSize,
                                                      queryBuilder.buildQuery(params, Order.class.getSimpleName()));

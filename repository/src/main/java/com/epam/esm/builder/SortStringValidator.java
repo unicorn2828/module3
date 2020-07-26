@@ -4,9 +4,16 @@ import java.lang.reflect.Field;
 
 import static com.epam.esm.builder.QueryBuilderData.*;
 
-public class SortStringValidator {
+/**
+ * This is the SortStringValidator class.
+ * This class contains only one method for validation input params of sort data.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
+class SortStringValidator {
 
-    public static boolean isValidSortData(String in, String className) {
+    static boolean isValidSortData(String in, String className) {
         String classPath = PACKAGE + className + CLASS_NAME_SUFFIX;
         boolean condition = false;
         in = in.toLowerCase().trim();

@@ -1,7 +1,7 @@
 package com.epam.esm.jwt;
 
 import com.epam.esm.exception.ServiceExceptionCode;
-import com.epam.esm.service.IUserService;
+import com.epam.esm.service.IRegistrationService;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class JwtTokenProvider {
     public static final String CLAIM_ROLE = "role";
 
     @Autowired
-    private IUserService userService;
+    private IRegistrationService registrationService;
 
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
@@ -69,7 +69,7 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userService.loadUserByUsername(getUsername(token));
+        UserDetails userDetails = this.registrationService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 

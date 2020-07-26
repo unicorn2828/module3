@@ -1,12 +1,10 @@
 package com.epam.esm.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.io.Serializable;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class CertificatePriceDto {
-    private BigDecimal price;
+public class CertificatePriceDto implements Serializable {
+    private String newPrice;
 }

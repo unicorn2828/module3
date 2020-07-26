@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "tag")
-public class Tag extends BaseModel<Tag> {
+public class Tag extends BaseModel {
 
     @Column(name = "tag_name")
     private String tagName;

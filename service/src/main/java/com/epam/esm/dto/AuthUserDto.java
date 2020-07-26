@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 public class AuthUserDto {
 
     @NotBlank(message = "login can't be empty")
-    @Size(max = 20, min = 4, message = "incorrect length of login - max 20, min 4 symbols")
+    @Size(max = 30, min = 3, message = "incorrect length of login - max 30, min 3 symbols")
     private String login;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

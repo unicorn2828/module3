@@ -5,34 +5,19 @@ import com.epam.esm.repository.IOrderRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import java.util.List;
-import java.util.Optional;
 
+/**
+ * This is the OrderRepository class; it  extends @link BaseAbstractRepository} class.
+ * <p>
+ * Please see the {@link BaseAbstractRepository} and {@link IOrderRepository} classes for true identity.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Repository
-public class OrderRepository implements IOrderRepository {
+public class OrderRepository extends BaseAbstractRepository<Order> implements IOrderRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Override
-    public Optional<Order> find(long id) {
-        return Optional.ofNullable(entityManager.find(Order.class, id));
-  }
-
-    @Override
-    public Order save(Order order) {
-        System.out.println(order);
-        entityManager.persist(order);
-        entityManager.flush();
-        return entityManager.find(Order.class, order.getId());
+    public OrderRepository(EntityManager em) {
+        super(em, Order.class);
     }
-
-    @Override
-    public List<Order> findAll(int pageNumber, int pageSize, String sql){
-        TypedQuery<Order> query = entityManager.createQuery(sql, Order.class);
-        query.setFirstResult((pageNumber-1) * pageSize);
-        query.setMaxResults(pageSize);
-        return query.getResultList();}
 }

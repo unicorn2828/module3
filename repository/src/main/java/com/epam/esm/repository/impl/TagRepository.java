@@ -7,40 +7,33 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.List;
 import java.util.Optional;
 
+/**
+ * This is the TagRepository class; it extends {@link BaseAbstractRepository} class.
+ * <p>
+ * Please see the {@link BaseAbstractRepository} and {@link ITagRepository} classes for true identity.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Repository
-public class TagRepository implements ITagRepository {
-    private static final String TAG_NAME = "tag_name";
-    private static final String FIND_BY_NAME = "SELECT t FROM Tag t WHERE t.tagName = :tag_name";
+public class TagRepository extends BaseAbstractRepository<Tag> implements ITagRepository {
+    public static final String TAG_NAME = "tag_name";
+    public static final String FIND_BY_NAME_QUERY = "SELECT t FROM Tag t WHERE t.tagName = :tag_name";
 
     @PersistenceContext
     private EntityManager entityManager;
 
+    public TagRepository(EntityManager em) {
+        super(em, Tag.class);
+    }
+
     @Override
     public Optional<Tag> findByName(String name) {
-        TypedQuery<Tag> query = entityManager.createQuery(FIND_BY_NAME, Tag.class);
-        return Optional.ofNullable(query.setParameter(TAG_NAME, name).getSingleResult());
-    }
-
-    @Override
-    public Optional<Tag> find(long id) {
-        return Optional.ofNullable(entityManager.find(Tag.class, id));
-    }
-
-    @Override
-    public List<Tag> findAll(int pageNumber, int pageSize, String sql){
-        TypedQuery<Tag> query = entityManager.createQuery(sql, Tag.class);
-        query.setFirstResult((pageNumber-1) * pageSize);
-        query.setMaxResults(pageSize);
-        return query.getResultList();}
-
-    @Override
-    public Tag save(Tag tag) {
-        entityManager.persist(tag);
-        entityManager.flush();
-        return entityManager.find(Tag.class, tag.getId());
+        TypedQuery<Tag> query = entityManager.createQuery(FIND_BY_NAME_QUERY, Tag.class);
+        query.setParameter(TAG_NAME, name);
+        return query.getResultStream().findFirst();
     }
 
     @Override

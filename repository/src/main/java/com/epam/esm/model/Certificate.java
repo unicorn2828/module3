@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "certificate")
 @EntityListeners(AuditingEntityListener.class)
-public class Certificate extends BaseModel<Certificate> {
+public class Certificate extends BaseModel {
     private String certificateName;
     private String description;
     private BigDecimal price;

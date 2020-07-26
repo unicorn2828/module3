@@ -1,5 +1,11 @@
 package com.epam.esm.exception;
 
+/**
+ * This is custom exception class; it extends {@link RuntimeException} class.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 public class ServiceException extends RuntimeException {
     protected String errorCode;
     protected String errorMessage;

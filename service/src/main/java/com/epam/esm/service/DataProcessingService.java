@@ -24,6 +24,10 @@ public class DataProcessingService {
     private final PaginationValidator paginationValidator;
     private final CamelStringManager stringManager;
 
+    public enum PageParamType {
+        PAGE_SIZE, PAGE_NUMBER
+    }
+
     public Map<String, String> toCamelCase(Map<String, String> params) {
         Map<String, String> map = params.entrySet()
                                         .stream()
@@ -32,39 +36,30 @@ public class DataProcessingService {
         return map;
     }
 
-    public int receivePageNumber(Map<String, String> params) {
-        int pageNumber;
+    public int receivePageParam(Map<String, String> params, PageParamType type) {
+        int pageParam;
         params = toCamelCase(params);
-        if (params.get(PAGE_NUMBER) != null && paginationValidator.isNumber(params.get(PAGE_NUMBER))) {
+        String var = type.equals(PageParamType.PAGE_NUMBER) ? PAGE_NUMBER : PAGE_SIZE;
+        if (params.get(var) != null && paginationValidator.isNumber(params.get(var))) {
             try {
-                pageNumber = Integer.parseInt(params.get(PAGE_NUMBER));
+                pageParam = Integer.parseInt(params.get(var));
             } catch (NumberFormatException e) {
-                ServiceExceptionCode exception = PAGE_NUMBER_NOT_INTEGER;
+                ServiceExceptionCode exception = PAGE_NUMBER_OR_SIZE_NOT_INTEGER;
                 log.error(exception.getExceptionCode() + ":" + exception.getExceptionMessage());
                 throw new ServiceException(exception);
             }
         } else {
-            pageNumber = DEFAULT_PAGE_NUMBER;
-        }
-        paginationValidator.isPageNumberOrSize(pageNumber);
-        return pageNumber;
-    }
-
-    public int receivePageSize(Map<String, String> params) {
-        int pageSize;
-        params = toCamelCase(params);
-        if (params.get(PAGE_SIZE) != null && paginationValidator.isNumber(params.get(PAGE_SIZE))) {
-            try {
-                pageSize = Integer.parseInt(params.get(PAGE_SIZE));
-            } catch (NumberFormatException e) {
-                ServiceExceptionCode exception = NUMBER_PAGE_SIZE_NOT_INTEGER;
-                log.error(exception.getExceptionCode() + ":" + exception.getExceptionMessage());
-                throw new ServiceException(exception);
+            switch (type) {
+                default:
+                case PAGE_NUMBER:
+                    pageParam = DEFAULT_PAGE_NUMBER;
+                    break;
+                case PAGE_SIZE:
+                    pageParam = DEFAULT_PAGE_SIZE;
+                    break;
             }
-        } else {
-            pageSize = DEFAULT_PAGE_SIZE;
         }
-        paginationValidator.isPageNumberOrSize(pageSize);
-        return pageSize;
+        paginationValidator.isPageNumberOrSize(pageParam);
+        return pageParam;
     }
 }

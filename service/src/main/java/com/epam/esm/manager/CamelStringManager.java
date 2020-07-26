@@ -13,8 +13,14 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import static com.epam.esm.exception.ServiceExceptionCode.UNKNOWN_PARAMETER;
-import static com.epam.esm.manager.ManagerData.*;
+import static com.epam.esm.manager.data.ManagerData.*;
 
+/**
+ * This is the CamelStringManager class; it toggles input string to the correct camel style.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Slf4j
 @Component
 public class CamelStringManager {
@@ -45,8 +51,7 @@ public class CamelStringManager {
                 int lastDotIndex = fieldName.lastIndexOf('.');
                 fieldName = fieldName.substring(lastDotIndex + 1);
                 if (String.valueOf(camelString.charAt(0)).equals(MINUS)) {
-                    camelString = camelString.substring(1).trim();
-                    if (fieldName.toLowerCase().equals(camelString)) {
+                    if (fieldName.toLowerCase().equals(camelString.substring(1).trim())) {
                         camelString = fieldName;
                         camelString = "-" + camelString;
                     }

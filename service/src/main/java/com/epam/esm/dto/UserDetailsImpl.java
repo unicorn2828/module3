@@ -8,7 +8,6 @@ import java.util.Collection;
 
 @Data
 public class UserDetailsImpl implements UserDetails {
-
     private long id;
     private String login;
     private String email;

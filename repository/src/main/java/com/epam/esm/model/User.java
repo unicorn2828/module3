@@ -12,8 +12,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "users")
-public class User extends BaseModel<User> {
-
+public class User extends BaseModel {
     private String login;
     private String password;
     private String email;

@@ -30,6 +30,8 @@ public class ExceptionCode {
     public static final String ERROR_000050 = "000050";
     public static final String ERROR_000051 = "000051";
     public static final String ERROR_000052 = "000052";
+    public static final String ERROR_000053 = "000053";
+    public static final String ERROR_000054 = "000054";
 
     public static final String ERROR_000060 = "000060";
     public static final String ERROR_000061 = "000061";
@@ -39,6 +41,20 @@ public class ExceptionCode {
     public static final String ERROR_000070 = "000070";
     public static final String ERROR_000071 = "000071";
     public static final String ERROR_000072 = "000072";
+    public static final String ERROR_000073 = "000073";
+
+    public static final String ERROR_000080 = "000080";
+    public static final String ERROR_000081 = "000081";
+    public static final String ERROR_000082 = "000082";
+    public static final String ERROR_000083 = "000083";
+    public static final String ERROR_000084 = "000084";
+    public static final String ERROR_000085 = "000085";
+    public static final String ERROR_000086 = "000086";
+    public static final String ERROR_000087 = "000087";
+
+    public static final String ERROR_000090 = "000090";
+    public static final String ERROR_000091 = "000091";
+    public static final String ERROR_000092 = "000092";
 
     public static final String ERROR_000100 = "000100";
     public static final String ERROR_000101 = "000101";
