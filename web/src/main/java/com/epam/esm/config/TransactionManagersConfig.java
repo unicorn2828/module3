@@ -10,11 +10,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+/**
+ * This is the TransactionManagersConfig class; it uses for Transaction Manager configuration.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Configuration
 @EnableTransactionManagement
 public class TransactionManagersConfig {
     @Autowired
-    EntityManagerFactory emf;
+    private EntityManagerFactory emf;
     @Autowired
     private DataSource dataSource;
 

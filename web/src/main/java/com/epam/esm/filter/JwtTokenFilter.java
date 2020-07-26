@@ -14,6 +14,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+/**
+ * This is the JwtTokenFilter class; it extends GenericFilterBean abstract class.
+ * This class filters everyone request by jwtTokenProvider {@link JwtTokenProvider}.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenFilter extends GenericFilterBean {

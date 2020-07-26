@@ -14,7 +14,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-
+/**
+ * This is the WebSecurityConfig class; it uses for security configuration.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor

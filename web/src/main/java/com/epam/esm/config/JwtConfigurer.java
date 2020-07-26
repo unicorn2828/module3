@@ -8,6 +8,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * This is the JwtConfigurer class; it uses for JWT security configuration.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Data
 public class JwtConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
     private final JwtTokenProvider jwtTokenProvider;

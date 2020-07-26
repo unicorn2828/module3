@@ -3,7 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.BookingDto;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.dto.OrdersDto;
-import com.epam.esm.hateoas.OrderHateoas;
+import com.epam.esm.hateoas.IOrderHateoas;
 import com.epam.esm.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Map;
 
+/**
+ * This is the OrderController class.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +30,7 @@ import java.util.Map;
                 produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController {
     private final IOrderService orderService;
-    private final OrderHateoas hateoas;
+    private final IOrderHateoas hateoas;
 
     @GetMapping(value = "/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
@@ -35,7 +41,7 @@ public class OrderController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     public OrdersDto findAll(@RequestParam Map<String, String> allParams) {
         OrdersDto orders = orderService.findAll(allParams);

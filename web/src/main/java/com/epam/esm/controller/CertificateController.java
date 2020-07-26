@@ -1,19 +1,29 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDto;
-import com.epam.esm.dto.CertificatesDto;
 import com.epam.esm.dto.CertificatePriceDto;
-import com.epam.esm.hateoas.CertificateHateoas;
+import com.epam.esm.dto.CertificatesDto;
+import com.epam.esm.hateoas.ICertificateHateoas;
 import com.epam.esm.service.ICertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.Map;
 
+/**
+ * This is the CertificateController class.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/certificates",
@@ -21,12 +31,12 @@ import java.util.Map;
                 produces = MediaType.APPLICATION_JSON_VALUE)
 public class CertificateController {
     private final ICertificateService certificateService;
-    private final CertificateHateoas hateoas;
+    private final ICertificateHateoas hateoas;
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{certificateId}")
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDto find(@PathVariable("id") final Long id) {
-        CertificateDto certificate = certificateService.find(id);
+    public CertificateDto findCertificateById(@Valid @PathVariable("certificateId") @Positive final Long certificateId) {
+        CertificateDto certificate = certificateService.find(certificateId);
         return hateoas.add(certificate);
     }
 
@@ -37,10 +47,10 @@ public class CertificateController {
         return hateoas.add(certificates);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/{certificateId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Void> remove(@PathVariable("id") final Long id) {
-        certificateService.delete(id);
+    public ResponseEntity<Void> removeCertificateById(@Valid @PathVariable("certificateId") @Positive final Long certificateId) {
+        certificateService.delete(certificateId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -48,28 +58,28 @@ public class CertificateController {
     @ResponseBody
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public CertificateDto create(@RequestBody(required = false) final CertificateDto certificateDto) {
+    public CertificateDto createCertificate(@RequestBody(required = false) final CertificateDto certificateDto) {
         CertificateDto certificate = certificateService.create(certificateDto);
         return hateoas.add(certificate);
     }
 
     @ResponseBody
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{certificateId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDto update(@PathVariable("id") final Long id,
-                                 @RequestBody(required = false) final CertificateDto certificateDto) {
-        CertificateDto certificate = certificateService.update(certificateDto, id);
+    public CertificateDto updateCertificate(@PathVariable("certificateId") final Long certificateId,
+                                            @RequestBody(required = false) final CertificateDto certificateDto) {
+        CertificateDto certificate = certificateService.update(certificateDto, certificateId);
         return hateoas.add(certificate);
     }
 
     @ResponseBody
-    @PatchMapping(value = "/{id}")
+    @PatchMapping(value = "/{certificateId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    public CertificateDto update(@PathVariable("id") final Long id,
-                                 @RequestBody(required = false) final CertificatePriceDto price) {
-        CertificateDto certificate = certificateService.updatePrice(price, id);
+    public CertificateDto updatePrice(@PathVariable("certificateId") final Long certificateId,
+                                      @RequestBody(required = false) final CertificatePriceDto price) {
+        CertificateDto certificate = certificateService.updatePrice(price, certificateId);
         return hateoas.add(certificate);
     }
 }

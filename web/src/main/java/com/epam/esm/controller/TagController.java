@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.dto.TagsDto;
-import com.epam.esm.hateoas.TagHateoas;
+import com.epam.esm.hateoas.ITagHateoas;
 import com.epam.esm.service.ITagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.Map;
 
+/**
+ * This is the TagController class.
+ *
+ * @author Vitaly Kononov
+ * @version 1.0
+ */
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -24,12 +30,12 @@ import java.util.Map;
                 produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
     private final ITagService tagService;
-    private final TagHateoas hateoas;
+    private final ITagHateoas hateoas;
 
     @GetMapping(value = "/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
     @ResponseStatus(HttpStatus.OK)
-    public TagDto find(@Valid @PathVariable("id") @Positive final Long id) {
+    public TagDto findTagById(@Valid @PathVariable("id") @Positive final Long id) {
         TagDto tag = tagService.find(id);
         return hateoas.add(tag);
     }
@@ -42,18 +48,19 @@ public class TagController {
         return hateoas.add(tags);
     }
 
-    @PostMapping(value = "/")
     @ResponseBody
+    @PostMapping(value = "/")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDto create(@Valid @RequestBody(required = false) final TagDto tagDto) {
+    public TagDto createTag(@Valid @RequestBody(required = false) final TagDto tagDto) {
+        System.out.println("d");
         TagDto tag =  tagService.create(tagDto);
         return hateoas.add(tag);
     }
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Void> remove(@Valid @PathVariable("id") @Positive final Long id) {
+    public ResponseEntity<Void> removeTag(@Valid @PathVariable("id") @Positive final Long id) {
         tagService.delete(id);
         return new ResponseEntity<>( HttpStatus.NO_CONTENT );
     }
